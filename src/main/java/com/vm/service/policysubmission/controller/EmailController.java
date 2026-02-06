@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,6 +21,8 @@ public class EmailController {
         response.put("subject", request.getSubject());
         response.put("sender", request.getSender());
         response.put("recipients", request.getRecipients());
+        response.put("queueId", request.getQueueId());
+        response.put("timestamp", request.getTimestamp());
         response.put("bodyLength", request.getBody() != null ? request.getBody().length() : 0);
         response.put("attachmentPaths", request.getAttachmentPaths());
         response.put("message", "Email payload acknowledged");
