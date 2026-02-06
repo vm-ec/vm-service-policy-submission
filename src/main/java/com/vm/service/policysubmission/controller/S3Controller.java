@@ -3,6 +3,7 @@ package com.vm.service.policysubmission.controller;
 import com.vm.service.policysubmission.service.S3Service;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/s3")
 @RequiredArgsConstructor
+@Slf4j
 public class S3Controller {
 
     private final S3Service s3Service;
+    private final String bucketName = "vm-ctwo-email-docs";
 
     @GetMapping("/health")
     public Map<String, Object> health() {
@@ -29,6 +32,7 @@ public class S3Controller {
         String status = s3Service.health();
         resp.put("status", status.startsWith("OK") ? "UP" : "DOWN");
         resp.put("details", status);
+        log.info("Controller S3 health check: {}", status);
         return resp;
     }
 
@@ -38,9 +42,11 @@ public class S3Controller {
             @RequestParam("key") String key,
             @RequestParam("file") MultipartFile file
     ) throws Exception {
-        PutObjectResponse resp = s3Service.putObject(bucket, key, file);
+        log.info("Received file upload request: bucket={}, key={}, originalFilename={}, size={}", bucket, key, file.getOriginalFilename(), file.getSize());
+
+        PutObjectResponse resp = s3Service.putObject(bucketName, key, file);
         Map<String, Object> out = new HashMap<>();
-        out.put("bucket", bucket);
+        out.put("bucket", bucketName);
         out.put("key", key);
         out.put("eTag", resp.eTag());
         out.put("versionId", resp.versionId());

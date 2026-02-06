@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
@@ -37,9 +39,18 @@ public class S3Service {
             s3Client.headBucket(headReq);
             return "OK";
         } catch (S3Exception ex) {
-            return "ERROR: " + ex.awsErrorDetails().errorMessage();
+            String msg = ex.awsErrorDetails() != null && ex.awsErrorDetails().errorMessage() != null
+                    ? ex.awsErrorDetails().errorMessage()
+                    : ex.getMessage();
+            Integer statusCode = ex.awsErrorDetails() != null ? ex.awsErrorDetails().sdkHttpResponse().statusCode() : null;
+            String region = s3Client.serviceClientConfiguration().region().id();
+            return String.format("ERROR: %s (status=%s, bucket=%s, region=%s)", msg, statusCode, defaultBucket, region);
+        } catch (AwsServiceException ex) {
+            String region = s3Client.serviceClientConfiguration().region().id();
+            return String.format("ERROR: %s (bucket=%s, region=%s)", ex.getMessage(), defaultBucket, region);
         } catch (Exception ex) {
-            return "ERROR: " + ex.getMessage();
+            String region = s3Client.serviceClientConfiguration().region().id();
+            return String.format("ERROR: %s (bucket=%s, region=%s)", ex.getMessage(), defaultBucket, region);
         }
     }
 
