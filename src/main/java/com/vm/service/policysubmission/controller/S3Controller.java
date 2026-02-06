@@ -1,5 +1,7 @@
 package com.vm.service.policysubmission.controller;
 
+import com.amazonaws.services.s3.model.PutObjectResult;
+import com.vm.service.policysubmission.service.PublicS3;
 import com.vm.service.policysubmission.service.S3Service;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import java.util.Map;
 public class S3Controller {
 
     private final S3Service s3Service;
+    private final PublicS3 publicS3;
     private final String bucketName = "vm-ctwo-email-docs";
 
     @GetMapping("/health")
@@ -50,6 +53,19 @@ public class S3Controller {
         out.put("key", key);
         out.put("eTag", resp.eTag());
         out.put("versionId", resp.versionId());
+        out.put("result", "UPLOADED");
+        return out;
+    }
+
+    @PostMapping(value = "/putpublic")
+    public Map<String, Object> putPublicS3(
+            @RequestParam("key") String key,
+            @RequestParam("file") String file
+    ) throws Exception {
+        PutObjectResult resp = publicS3.putObject(key, file);
+        Map<String, Object> out = new HashMap<>();
+        out.put("file", file);
+        out.put("key", key);
         out.put("result", "UPLOADED");
         return out;
     }
