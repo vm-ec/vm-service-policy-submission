@@ -1,7 +1,5 @@
 package com.vm.service.policysubmission.controller;
 
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.vm.service.policysubmission.service.PublicS3;
 import com.vm.service.policysubmission.service.S3Service;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +24,6 @@ import java.util.Map;
 public class S3Controller {
 
     private final S3Service s3Service;
-    private final PublicS3 publicS3;
-    private final String bucketName = "vm-ctwo-email-docs";
 
     @GetMapping("/health")
     public Map<String, Object> health() {
@@ -47,9 +43,9 @@ public class S3Controller {
     ) throws Exception {
         log.info("Received file upload request: bucket={}, key={}, originalFilename={}, size={}", bucket, key, file.getOriginalFilename(), file.getSize());
 
-        PutObjectResponse resp = s3Service.putObject(bucketName, key, file);
+        PutObjectResponse resp = s3Service.putObject(bucket, key, file);
         Map<String, Object> out = new HashMap<>();
-        out.put("bucket", bucketName);
+        out.put("bucket", bucket);
         out.put("key", key);
         out.put("eTag", resp.eTag());
         out.put("versionId", resp.versionId());
@@ -57,22 +53,9 @@ public class S3Controller {
         return out;
     }
 
-    @PostMapping(value = "/putpublic")
-    public Map<String, Object> putPublicS3(
-            @RequestParam("key") String key,
-            @RequestParam("file") String file
-    ) throws Exception {
-        PutObjectResult resp = publicS3.putObject(key, file);
-        Map<String, Object> out = new HashMap<>();
-        out.put("file", file);
-        out.put("key", key);
-        out.put("result", "UPLOADED");
-        return out;
-    }
-
     @PostMapping(value = "/put-file-public", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> putBytes(@RequestParam String fileName, String contentType, @RequestParam byte[] contentBytes) {
-        PutObjectResponse resp = s3Service.putObject("vm-ctwo-public", fileName, contentBytes, contentType);
+        PutObjectResponse resp = s3Service.putObject("vm-ctwo-public", fileName, contentBytes, "application/octet-stream");
         Map<String, Object> out = new HashMap<>();
         out.put("eTag", resp.eTag());
         out.put("versionId", resp.versionId());
