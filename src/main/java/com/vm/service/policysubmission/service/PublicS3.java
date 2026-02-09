@@ -39,11 +39,7 @@ public class PublicS3 {
     public PutObjectResult putObject(String bucket, String key, byte[] content, String contentType) {
         String targetBucket = bucket != null && !bucket.isBlank() ? bucket : bucketName;
         InputStream stream = new ByteArrayInputStream(content);
-        PutObjectRequest req = PutObjectRequest.builder()
-                .bucket(targetBucket)
-                .key(key)
-                .contentType(contentType)
-                .build();
-        return s3Client.putObject(key, bucket, Arrays.toString(content));
+
+        return s3Client.putObject(bucketName, key, stream, null);
     }
 }

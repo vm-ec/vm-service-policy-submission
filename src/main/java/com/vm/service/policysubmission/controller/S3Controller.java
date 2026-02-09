@@ -68,7 +68,7 @@ public class S3Controller {
     }
     @PostMapping(value = "/put-body-public", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> putBytesPublic(@RequestBody AttachmentRequest request) {
-        PutObjectResult resp = publicS3.putObject("vm-ctwo-public", request.getFileName(), request.getContentBytes().getBytes(), "application/octet-stream");
+        PutObjectResult resp = publicS3.putObject(null, request.getFileName(), request.getContentBytes().getBytes(), "application/octet-stream");
 
         Map<String, Object> out = new HashMap<>();
         out.put("result", "UPLOADED");
