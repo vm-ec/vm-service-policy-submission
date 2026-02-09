@@ -1,5 +1,6 @@
 package com.vm.service.policysubmission.controller;
 
+import com.vm.service.policysubmission.dto.AttachmentRequest;
 import com.vm.service.policysubmission.service.S3Service;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -63,8 +64,8 @@ public class S3Controller {
         return out;
     }
     @PostMapping(value = "/put-body-public", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> putBytesPublic(@RequestParam String fileName, @RequestBody byte[] contentBytes) {
-        PutObjectResponse resp = s3Service.putObject("vm-ctwo-public", fileName, contentBytes, "application/octet-stream");
+    public Map<String, Object> putBytesPublic(@RequestBody AttachmentRequest request) {
+        PutObjectResponse resp = s3Service.putObject("vm-ctwo-public", request.getFileName(), request.getContentBytes().getBytes(), "application/octet-stream");
         Map<String, Object> out = new HashMap<>();
         out.put("eTag", resp.eTag());
         out.put("versionId", resp.versionId());
