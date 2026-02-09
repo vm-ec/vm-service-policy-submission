@@ -70,6 +70,16 @@ public class S3Controller {
         return out;
     }
 
+    @PostMapping(value = "/put-file-public", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> putBytes(@RequestParam String fileName, String contentType, @RequestParam byte[] contentBytes) {
+        PutObjectResponse resp = s3Service.putObject("vm-ctwo-public", fileName, contentBytes, contentType);
+        Map<String, Object> out = new HashMap<>();
+        out.put("eTag", resp.eTag());
+        out.put("versionId", resp.versionId());
+        out.put("result", "UPLOADED");
+        return out;
+    }
+
     @PostMapping(value = "/put-bytes-public", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> putBytes(@RequestParam String key, @RequestParam byte[] content) {
         PutObjectResponse resp = s3Service.putObject("vm-ctwo-public", key, content, "application/bytes");
