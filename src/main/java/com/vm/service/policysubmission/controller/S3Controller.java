@@ -1,6 +1,8 @@
 package com.vm.service.policysubmission.controller;
 
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.vm.service.policysubmission.dto.AttachmentRequest;
+import com.vm.service.policysubmission.service.PublicS3;
 import com.vm.service.policysubmission.service.S3Service;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import java.util.Map;
 public class S3Controller {
 
     private final S3Service s3Service;
+    private final PublicS3 publicS3;
 
     @GetMapping("/health")
     public Map<String, Object> health() {
@@ -65,10 +68,9 @@ public class S3Controller {
     }
     @PostMapping(value = "/put-body-public", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> putBytesPublic(@RequestBody AttachmentRequest request) {
-        PutObjectResponse resp = s3Service.putObject("vm-ctwo-public", request.getFileName(), request.getContentBytes().getBytes(), "application/octet-stream");
+        PutObjectResult resp = publicS3.putObject("vm-ctwo-public", request.getFileName(), request.getContentBytes().getBytes(), "application/octet-stream");
+
         Map<String, Object> out = new HashMap<>();
-        out.put("eTag", resp.eTag());
-        out.put("versionId", resp.versionId());
         out.put("result", "UPLOADED");
         return out;
     }

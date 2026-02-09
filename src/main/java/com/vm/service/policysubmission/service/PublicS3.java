@@ -6,9 +6,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.util.Arrays;
+
 @Service
 public class PublicS3 {
     private final AmazonS3 s3Client;
@@ -31,5 +35,15 @@ public class PublicS3 {
             e.printStackTrace();
         }
         return null;
+    }
+    public PutObjectResult putObject(String bucket, String key, byte[] content, String contentType) {
+        String targetBucket = bucket != null && !bucket.isBlank() ? bucket : bucketName;
+        InputStream stream = new ByteArrayInputStream(content);
+        PutObjectRequest req = PutObjectRequest.builder()
+                .bucket(targetBucket)
+                .key(key)
+                .contentType(contentType)
+                .build();
+        return s3Client.putObject(key, bucket, Arrays.toString(content));
     }
 }
