@@ -72,7 +72,7 @@ public class S3Controller {
 
     @PostMapping(value = "/put-bytes-public", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> putBytes(@RequestParam String key, @RequestParam byte[] content) {
-        PutObjectResponse resp = s3Service.putObject(null, key, content, "application/bytes");
+        PutObjectResponse resp = s3Service.putObject("vm-ctwo-public", key, content, "application/bytes");
         Map<String, Object> out = new HashMap<>();
         out.put("eTag", resp.eTag());
         out.put("versionId", resp.versionId());
