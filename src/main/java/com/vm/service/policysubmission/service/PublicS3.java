@@ -20,6 +20,7 @@ public class PublicS3 {
     private final TimestampFileName timer;
     private final AmazonS3 s3Client;
     private final String bucketName = "vm-ctwo-public";
+    private final String region = "us-east-1";
 
     public PublicS3(TimestampFileName timer) {
         this.timer = timer;
@@ -41,7 +42,7 @@ public class PublicS3 {
         return null;
     }
 
-    public PutObjectResult putObjectBody(String key, byte[] content) {
+    public String putObjectBody(String key, byte[] content) {
         InputStream stream = new ByteArrayInputStream(content);
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(content.length);
@@ -51,6 +52,11 @@ public class PublicS3 {
         // metadata.setContentEncoding(null);
         String fileName = timer.addTimestamp(key);
         log.info("Uploading to public S3: bucket={}, key={}, contentLength={}, contentType={}", bucketName, fileName, content.length, metadata.getContentType());
-        return s3Client.putObject(bucketName, key, stream, metadata);
+        s3Client.putObject(bucketName, fileName, stream, metadata);
+        return String.format(
+                "https://%s.s3.%s.amazonaws.com/%s",
+                bucketName,
+                region,
+                fileName);
     }
 }

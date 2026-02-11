@@ -68,14 +68,10 @@ public class S3Controller {
         return out;
     }
     @PostMapping(value = "/put-body-public", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> putBytesPublic(@RequestBody AttachmentRequest request) {
+    public String putBytesPublic(@RequestBody AttachmentRequest request) {
         // Decode base64 payload to raw bytes to avoid corruption
         byte[] bytes = Base64.getDecoder().decode(request.getContentBytes());
-        PutObjectResult resp = publicS3.putObjectBody(request.getFileName(), bytes);
-
-        Map<String, Object> out = new HashMap<>();
-        out.put("result", "UPLOADED");
-        return out;
+        return publicS3.putObjectBody(request.getFileName(), bytes);
     }
 
     @PostMapping(value = "/put-bytes-public", consumes = MediaType.APPLICATION_JSON_VALUE)
