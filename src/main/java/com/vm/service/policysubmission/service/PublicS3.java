@@ -4,14 +4,13 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Arrays;
 
 @Service
 public class PublicS3 {
@@ -36,10 +35,19 @@ public class PublicS3 {
         }
         return null;
     }
-    public PutObjectResult putObject(String bucket, String key, byte[] content, String contentType) {
-        String targetBucket = bucket != null && !bucket.isBlank() ? bucket : bucketName;
-        InputStream stream = new ByteArrayInputStream(content);
 
-        return s3Client.putObject(bucketName, key, stream, null);
+    public PutObjectResult putObject(String bucket, String key, byte[] content, String contentType) {
+        String targetBucket = (bucket != null && !bucket.isBlank()) ? bucket : bucketName;
+        InputStream stream = new ByteArrayInputStream(content);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(content.length);
+        if (contentType != null && !contentType.isBlank()) {
+            metadata.setContentType(contentType);
+        } else {
+            metadata.setContentType("application/octet-stream");
+        }
+        // Optional: disable content encoding to avoid unintended transformations
+        metadata.setContentEncoding(null);
+        return s3Client.putObject(targetBucket, key, stream, metadata);
     }
 }

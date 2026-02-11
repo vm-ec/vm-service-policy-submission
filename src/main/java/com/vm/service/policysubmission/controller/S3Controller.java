@@ -16,6 +16,7 @@ import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,9 @@ public class S3Controller {
     }
     @PostMapping(value = "/put-body-public", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> putBytesPublic(@RequestBody AttachmentRequest request) {
-        PutObjectResult resp = publicS3.putObject(null, request.getFileName(), request.getContentBytes().getBytes(), "application/octet-stream");
+        // Decode base64 payload to raw bytes to avoid corruption
+        byte[] bytes = Base64.getDecoder().decode(request.getContentBytes());
+        PutObjectResult resp = publicS3.putObject(null, request.getFileName(), bytes, request.getContentType());
 
         Map<String, Object> out = new HashMap<>();
         out.put("result", "UPLOADED");
