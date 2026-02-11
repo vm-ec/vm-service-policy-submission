@@ -6,18 +6,23 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.time.Instant;
 
 @Service
+@Slf4j
 public class PublicS3 {
+    private final TimestampFileName timer;
     private final AmazonS3 s3Client;
     private final String bucketName = "vm-ctwo-public";
 
-    public PublicS3() {
+    public PublicS3(TimestampFileName timer) {
+        this.timer = timer;
         // Create a client with Anonymous Credentials
         this.s3Client = AmazonS3ClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
@@ -44,6 +49,8 @@ public class PublicS3 {
         metadata.setContentType("application/octet-stream");
         // Do NOT set contentEncoding to null; AWS SDK v1 may NPE on null metadata entries
         // metadata.setContentEncoding(null);
+        String fileName = timer.addTimestamp(key);
+        log.info("Uploading to public S3: bucket={}, key={}, contentLength={}, contentType={}", bucketName, fileName, content.length, metadata.getContentType());
         return s3Client.putObject(bucketName, key, stream, metadata);
     }
 }
