@@ -36,18 +36,14 @@ public class PublicS3 {
         return null;
     }
 
-    public PutObjectResult putObject(String bucket, String key, byte[] content, String contentType) {
-        String targetBucket = (bucket != null && !bucket.isBlank()) ? bucket : bucketName;
+    public PutObjectResult putObjectBody(String key, byte[] content) {
         InputStream stream = new ByteArrayInputStream(content);
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(content.length);
-        if (contentType != null && !contentType.isBlank()) {
-            metadata.setContentType(contentType);
-        } else {
-            metadata.setContentType("application/octet-stream");
-        }
-        // Optional: disable content encoding to avoid unintended transformations
-        metadata.setContentEncoding(null);
-        return s3Client.putObject(targetBucket, key, stream, metadata);
+        // Ensure content type is always non-null
+        metadata.setContentType("application/octet-stream");
+        // Do NOT set contentEncoding to null; AWS SDK v1 may NPE on null metadata entries
+        // metadata.setContentEncoding(null);
+        return s3Client.putObject(bucketName, key, stream, metadata);
     }
 }

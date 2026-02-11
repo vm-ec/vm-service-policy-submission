@@ -71,7 +71,7 @@ public class S3Controller {
     public Map<String, Object> putBytesPublic(@RequestBody AttachmentRequest request) {
         // Decode base64 payload to raw bytes to avoid corruption
         byte[] bytes = Base64.getDecoder().decode(request.getContentBytes());
-        PutObjectResult resp = publicS3.putObject(null, request.getFileName(), bytes, request.getContentType());
+        PutObjectResult resp = publicS3.putObjectBody(request.getFileName(), bytes);
 
         Map<String, Object> out = new HashMap<>();
         out.put("result", "UPLOADED");
