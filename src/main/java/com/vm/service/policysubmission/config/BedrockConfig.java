@@ -7,26 +7,22 @@ import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.regions.providers.AwsRegionProvider;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.S3Configuration;
+import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
 
 @Configuration
-public class S3Config {
+public class BedrockConfig {
 
     // Optional override; otherwise region is resolved from env/profile/IMDS
-    @Value("${aws.s3.region:us-east-1}")
+    @Value("${aws.bedrock.region:us-east-1}")
     private String regionProperty;
 
     @Bean
-    public S3Client s3Client() {
+    public BedrockRuntimeClient bedrockRuntimeClient() {
         Region resolvedRegion = resolveRegion();
-        return S3Client.builder()
+        return BedrockRuntimeClient.builder()
                 .region(resolvedRegion)
                 // Default credentials chain (env, system props, web identity, shared config incl. SSO, ECS/EC2)
                 .credentialsProvider(DefaultCredentialsProvider.create())
-                .serviceConfiguration(S3Configuration.builder()
-                        .checksumValidationEnabled(true)
-                        .build())
                 .build();
     }
 
@@ -49,3 +45,4 @@ public class S3Config {
         return Region.US_EAST_1;
     }
 }
+

@@ -12,6 +12,7 @@ public class EmailRequest {
     private String sender;
     private Instant timestamp;
     private String queueId;
+    private String messageId;
     private List<String> recipients;
     private List<String> attachmentPaths;
 

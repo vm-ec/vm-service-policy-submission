@@ -1,6 +1,7 @@
 package com.vm.service.policysubmission.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3Service {
@@ -29,6 +30,7 @@ public class S3Service {
     public String health() {
         try {
             String bucket = defaultBucket;
+            log.info("Getting S3 bucket {}", bucket);
             if (bucket == null || bucket.isBlank()) {
                 // If no bucket is configured, fall back to a simple call that still requires permissions
                 s3Client.listBuckets(ListBucketsRequest.builder().build());
