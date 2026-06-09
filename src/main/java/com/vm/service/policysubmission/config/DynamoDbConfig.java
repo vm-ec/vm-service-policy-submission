@@ -1,5 +1,6 @@
 package com.vm.service.policysubmission.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -18,7 +19,8 @@ public class DynamoDbConfig {
     private static final String AWS_REGION =
             System.getenv("AWS_REGION");
 
-    public static DynamoDbClient dynamoDbClient() {
+    @Bean
+    public DynamoDbClient dynamoDbClient() {
 
         return DynamoDbClient.builder()
                 .region(Region.of(AWS_REGION))

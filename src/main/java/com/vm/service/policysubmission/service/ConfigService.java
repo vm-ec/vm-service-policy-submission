@@ -1,5 +1,7 @@
 package com.vm.service.policysubmission.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
@@ -10,15 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class ConfigService {
 
     private final DynamoDbClient dynamoDbClient;
-
-    public ConfigService(
-            DynamoDbClient dynamoDbClient) {
-
-        this.dynamoDbClient = dynamoDbClient;
-    }
 
     public void save(
             String configId,
