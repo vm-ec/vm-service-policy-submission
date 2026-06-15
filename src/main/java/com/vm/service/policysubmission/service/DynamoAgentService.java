@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,15 +57,14 @@ public class DynamoAgentService {
 
     private String prepareInputText(DynamoAgentRequest request) {
         try {
-            Map<String, Object> payload = Map.of(
-                    "claim_reference", request != null ? request.getClaimReference() : null,
-                    "structured_fields", request != null ? request.getStructuredFields() : null,
-                    "claim_text", request != null ? request.getClaimText() : null,
-                    "confidence_threshold", request != null ? request.getConfidenceThreshold() : null,
-                    "agent_id", agentId,
-                    "agent_alias_id", agentAliasId,
-                    "runtime_client_configured", bedrockRuntimeClient != null
-            );
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("claim_reference", request != null ? request.getClaimReference() : null);
+            payload.put("structured_fields", request != null ? request.getStructuredFields() : null);
+            payload.put("claim_text", request != null ? request.getClaimText() : null);
+            payload.put("confidence_threshold", request != null ? request.getConfidenceThreshold() : null);
+            payload.put("agent_id", agentId);
+            payload.put("agent_alias_id", agentAliasId);
+            payload.put("runtime_client_configured", bedrockRuntimeClient != null);
             return objectMapper.writeValueAsString(payload);
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize Dynamo request", e);
