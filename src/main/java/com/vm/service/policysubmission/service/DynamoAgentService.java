@@ -27,7 +27,7 @@ public class DynamoAgentService {
     @Value("${aws.bedrock.agent.alias.id:LFZQYFUWQZ}")
     private String agentAliasId;
 
-    @Value("${aws.bedrock.agent.mock-mode:true}")
+    @Value("${aws.bedrock.agent.mock-mode:false}")
     private boolean mockMode;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
