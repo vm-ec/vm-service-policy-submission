@@ -1,5 +1,6 @@
 package com.vm.service.policysubmission.controller;
 
+import com.vm.service.policysubmission.dto.ContextEmailRequest;
 import com.vm.service.policysubmission.dto.DynamoAgentRequest;
 import com.vm.service.policysubmission.dto.DynamoAgentResponse;
 import com.vm.service.policysubmission.dto.EmailRequest;
@@ -28,8 +29,18 @@ public class DynamoEmailController {
 
     @PostMapping(path = "/email", consumes = "application/json", produces = "application/json")
     @Operation(summary = "Process FNOL Email", description = "Receive FNOL email and forward to Dynamo agent pipeline for scoring")
-    public ResponseEntity<Map<String, Object>> process(@RequestBody EmailRequest request) {
-        log.info("Received FNOL email for Dynamo processing from: {} with subject: {}", request.getSender(), request.getSubject());
+    public ResponseEntity<Map<String, Object>> process(@RequestBody ContextEmailRequest contextRequest) {
+
+        if(contextRequest == null || contextRequest.getContext() == null) {
+            log.warn("Received null or invalid email request");
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("status", "ERROR");
+            errorResponse.put("message", "Invalid email request payload");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+
+        EmailRequest request = contextRequest.getContext();
+        log.info("Received claims FNOL email from: {} with subject: {}", request.getSender(), request.getSubject());
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", "RECEIVED");
