@@ -58,9 +58,9 @@ public class DynamoEmailController {
 
             int claimsNumber = (int) (Math.random() * 1000);
             String formattedClaimsNumber = String.format("%04d", claimsNumber);
-
+            log.info("Generated mock claims number: {}", formattedClaimsNumber);
             DynamoAgentRequest agentRequest = DynamoAgentRequest.builder()
-                    .claimReference(firstNonBlank(request.getMessageId(), request.getQueueId(), "CM-2026-" + formattedClaimsNumber))
+                    .claimReference("CM-2026-" + formattedClaimsNumber)
                     .claimText(request.getBody())
                     .confidenceThreshold(60)
                     .structuredFields(DynamoAgentRequest.StructuredFields.builder()
@@ -69,7 +69,7 @@ public class DynamoEmailController {
                             .injuryIndicator(Boolean.FALSE)
                             .build())
                     .build();
-
+            log.info("Constructed DynamoAgentRequest: {}", agentRequest);
             DynamoAgentResponse agentResponse = dynamoAgentService.invokeAgent(agentRequest);
             response.put("dynamoAgentResponse", agentResponse);
             response.put("claimReference", agentResponse.getClaimReference());

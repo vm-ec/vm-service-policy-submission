@@ -8,6 +8,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.regions.providers.AwsRegionProvider;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
+import software.amazon.awssdk.services.bedrockagentruntime.BedrockAgentRuntimeClient;
 
 @Configuration
 public class BedrockConfig {
@@ -22,6 +23,15 @@ public class BedrockConfig {
         return BedrockRuntimeClient.builder()
                 .region(resolvedRegion)
                 // Default credentials chain (env, system props, web identity, shared config incl. SSO, ECS/EC2)
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
+    }
+
+    @Bean
+    public BedrockAgentRuntimeClient bedrockAgentRuntimeClient() {
+        Region resolvedRegion = resolveRegion();
+        return BedrockAgentRuntimeClient.builder()
+                .region(resolvedRegion)
                 .credentialsProvider(DefaultCredentialsProvider.create())
                 .build();
     }
