@@ -17,6 +17,9 @@ import software.amazon.awssdk.services.bedrockagentruntime.BedrockAgentRuntimeCl
 import software.amazon.awssdk.services.bedrockagentruntime.model.InvokeAgentRequest;
 import software.amazon.awssdk.services.bedrockagentruntime.model.InvokeAgentResponse;
 
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
