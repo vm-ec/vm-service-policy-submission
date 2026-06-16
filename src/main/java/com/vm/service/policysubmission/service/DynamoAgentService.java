@@ -44,6 +44,11 @@ public class DynamoAgentService {
 
     @Value("${aws.bedrock.agent.mock-mode:false}")
     private boolean mockMode;
+    
+    private static final String AWS_ACCESS_KEY = System.getenv("DYNAMO_AWS_ACCESS_KEY_ID");
+
+    private static final String AWS_SECRET_KEY = System.getenv("DYNAMO_AWS_SECRET_ACCESS_KEY");
+ 
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -96,9 +101,12 @@ public class DynamoAgentService {
 
             log.info("Invoking Bedrock Agent Core with ARN: {}", agentRuntimeArn);
 
-            BedrockAgentCoreClient bedrockClient = BedrockAgentCoreClient.builder()
-                    .region(region)
-                    .build();
+           BedrockAgentCoreClient bedrockClient = BedrockAgentCoreClient.builder()
+                .region(region)
+                .credentialsProvider(StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(AWS_ACCESS_KEY, AWS_SECRET_KEY)
+        ))
+        .build();
 
             String agentOutput;
             try (var response = bedrockClient.invokeAgentRuntime(invokeRequest)) {
